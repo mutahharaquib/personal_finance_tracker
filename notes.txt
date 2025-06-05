@@ -1,0 +1,53 @@
+✅ MUST-HAVES (Before Going Live)
+1. Secure Authentication
+ ✅ Email/password auth implemented.
+
+ ☐ Prevent duplicate email registrations with user-friendly error page.
+
+ ☐ Add Google OAuth for smoother signups and anti-spam protection.
+
+ ☐ Session security (e.g. secure cookies, session expiration).
+
+2. Authorization Middleware
+ ✅ requireLogin middleware used.
+
+ ☐ Apply it consistently across all sensitive routes (/dashboard, /transactions, /summary, etc).
+
+3. User Data Isolation
+ ✅ Transactions tied to userId.
+
+ ☐ Ensure all queries filter by req.session.userId.
+
+4. Form and Input Validation
+ ☐ Sanitize all input fields (amount, category, note, etc.).
+
+ ☐ Validate forms (e.g. amount must be a number, category not empty).
+
+ ☐ Server-side validation (not just frontend).
+
+5. Error Handling
+ ☐ Catch all server/database errors.
+
+ ☐ Redirect to a custom error page with a friendly message.
+
+ ☐ Log errors for debugging (e.g. with winston or simple console logs).
+
+🚧 SHOULD-HAVES (Before First Real Users)
+6. MVC Architecture
+ ☐ Move route logic to controllers (authController, transactionController, etc.).
+
+ ☐ Organize views, models, routes, controllers, and middlewares.
+
+7. User Experience
+ ☐ Improve feedback messages (e.g., success/fail after form submission).
+
+ ☐ Responsive and user-friendly UI.
+
+ ☐ Dashboard loading and data visualizations (maybe charts later).
+
+8. Security Enhancements
+ ☐ Use helmet middleware for HTTP headers.
+
+ ☐ Use express-rate-limit to prevent abuse.
+
+ ☐ Add CSRF protection.
