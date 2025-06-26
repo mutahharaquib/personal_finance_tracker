@@ -9,8 +9,8 @@
     body {
       margin: 0;
       padding: 0;
-      background: linear-gradient(to right, #6a11cb, #2575fc);
-      color: white;
+      background: linear-gradient(120deg, #0f2027, #2c5364 60%, #43e97b 100%);
+      color: #f8fafc;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       min-height: 100vh;
       display: flex;
@@ -25,24 +25,26 @@
     }
 
     .logo {
+      font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-weight: 900;
+      font-size: 2.2rem;
+      letter-spacing: 2px;
+      color: #43e97b;
+      background: linear-gradient(90deg, #43e97b 30%, #38f9d7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-fill-color: transparent;
       display: flex;
       align-items: center;
       gap: 10px;
-      font-weight: bold;
-      font-size: 1.5rem;
-      color: white;
-    }
-
-    .logo img {
-      height: 40px;
-      width: 40px;
-      object-fit: contain;
+      user-select: none;
     }
 
     .auth-links a {
       margin-left: 15px;
       font-weight: 600;
-      color: white;
+      color: #f8fafc;
       text-decoration: none;
       padding: 8px 16px;
       border-radius: 25px;
@@ -51,7 +53,8 @@
 
     .auth-links a.btn-login:hover,
     .auth-links a.btn-register:hover {
-      background-color: rgba(255, 255, 255, 0.15);
+      background-color: rgba(67, 233, 123, 0.18);
+      color: #43e97b;
     }
 
     .hero {
@@ -67,18 +70,20 @@
       font-size: 3rem;
       font-weight: 700;
       margin-bottom: 1rem;
+      color: #43e97b;
+      font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     .hero p {
       font-size: 1.25rem;
       max-width: 600px;
       margin: 0 auto 2rem;
-      color: #f0f0f0;
+      color: #d1fae5;
     }
 
     .btn-start {
-      background-color: #ffffff;
-      color: #2575fc;
+      background: linear-gradient(90deg, #43e97b 30%, #38f9d7 100%);
+      color: #0f2027;
       font-weight: bold;
       padding: 0.75rem 1.5rem;
       border-radius: 30px;
@@ -89,8 +94,9 @@
     }
 
     .btn-start:hover {
-      background-color: #e2e8f0;
-      transform: translateY(-2px);
+      background: #43e97b;
+      color: #fff;
+      transform: translateY(-2px) scale(1.04);
     }
 
     @media (max-width: 576px) {
@@ -103,14 +109,15 @@
       }
     }
   </style>
+  <!-- Google Fonts for Montserrat -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
 </head>
 <body>
 
   <!-- Custom Header -->
   <div class="header">
     <div class="logo">
-      <img src="/images/img1.png" alt="Logo Placeholder">
-      FinTrac
+      <span style="font-size:2.7rem;line-height:1;"></span>FinTrac
     </div>
     <div class="auth-links">
       <a href="/auth/login" class="btn-login">Login</a>
@@ -121,13 +128,49 @@
   <!-- Hero Section -->
   <section class="hero">
     <div>
-      <h1>Personal finance, made easy.</h1>
-      <p>
-        Track every income and expense effortlessly. Whether you're budgeting, saving, or just curious where your money goes — Finance Tracker keeps you in control.
+      <h1 style="font-size:3.2rem;letter-spacing:-1px;">Take Control of Your Money</h1>
+      <p style="font-size:1.3rem;color:#e0e7ff;max-width:650px;margin:0 auto 2.5rem;">
+        Track your expenses, set savings goals, and unlock your financial potential. FinTrac empowers you to manage your money smartly—perfect for students, young professionals, and anyone ready to build better habits.
       </p>
-      <a href="/auth/register" class="btn-start">Start Saving Today</a>
+      <a href="/auth/register" class="btn-start" style="font-size:1.1rem;">Start Saving Today</a>
     </div>
   </section>
+
+  <!-- Benefits Section -->
+  <section style="background:rgba(255,255,255,0.08);backdrop-filter:blur(2px);border-radius:24px;margin:2rem auto 0;max-width:900px;padding:2.5rem 1.5rem;box-shadow:0 8px 32px rgba(0,0,0,0.18);">
+    <h2 style="color:#fff;font-size:2rem;font-weight:700;text-align:center;margin-bottom:1.5rem;">Why Track Your Money?</h2>
+    <div class="row" style="gap:1.5rem;justify-content:center;">
+      <div class="col-md-4 col-12 mb-3">
+        <div style="background:rgba(39,94,254,0.13);border-radius:18px;padding:1.5rem;text-align:center;height:100%;box-shadow:0 2px 8px rgba(0,0,0,0.07);">
+          <div style="font-size:2.2rem;margin-bottom:0.7rem;">��</div>
+          <h4 style="font-weight:600;">Build Smart Habits</h4>
+          <p style="color:#e0e7ff;">Understand your spending patterns and make informed decisions for a brighter financial future.</p>
+        </div>
+      </div>
+      <div class="col-md-4 col-12 mb-3">
+        <div style="background:rgba(39,94,254,0.13);border-radius:18px;padding:1.5rem;text-align:center;height:100%;box-shadow:0 2px 8px rgba(0,0,0,0.07);">
+          <div style="font-size:2.2rem;margin-bottom:0.7rem;">📈</div>
+          <h4 style="font-weight:600;">Achieve Your Goals</h4>
+          <p style="color:#e0e7ff;">Set savings targets, track progress, and celebrate milestones—whether it's a new gadget or your dream trip.</p>
+        </div>
+      </div>
+      <div class="col-md-4 col-12 mb-3">
+        <div style="background:rgba(39,94,254,0.13);border-radius:18px;padding:1.5rem;text-align:center;height:100%;box-shadow:0 2px 8px rgba(0,0,0,0.07);">
+          <div style="font-size:2.2rem;margin-bottom:0.7rem;">🛡️</div>
+          <h4 style="font-weight:600;">Stay Stress-Free</h4>
+          <p style="color:#e0e7ff;">No more end-of-month surprises. Stay on top of your finances and enjoy peace of mind.</p>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:2rem;">
+      <a href="/auth/register" class="btn-start" style="background:#2575fc;color:#fff;">Get Started for Free</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer style="margin-top:auto;padding:1.5rem 0;text-align:center;color:#cbd5e1;font-size:1rem;">
+    &copy; <%= new Date().getFullYear() %> FinTrac. Empowering young people to master their money.
+  </footer>
 
 </body>
 </html>
