@@ -39,7 +39,13 @@ exports.updateProfile = async (req, res) => {
     return res.redirect("/settings");
   }
 
-  await User.updateOne({ _id: req.user._id }, { name, email, currency });
+  try {
+    await User.updateOne({ _id: req.user._id }, { name, email, currency });
+  } catch (err) {
+    if (err.code !== 11000) throw err;
+    req.flash("error", "That email is already used by another account.");
+    return res.redirect("/settings");
+  }
   req.flash("success", "Profile saved.");
   res.redirect("/settings");
 };
