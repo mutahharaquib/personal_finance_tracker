@@ -1,0 +1,11 @@
+<% if (flash && flash.length) { %>
+<div class="toasts" role="status" aria-live="polite">
+  <% flash.forEach(function (f) { %>
+    <div class="toast toast-<%= f.type %>">
+      <span class="toast-icon"><i data-lucide="<%= f.type === 'success' ? 'circle-check' : f.type === 'error' ? 'circle-x' : 'info' %>"></i></span>
+      <p><%= f.message %></p>
+      <button type="button" class="icon-btn" data-dismiss aria-label="Dismiss" style="width:24px;height:24px"><i data-lucide="x"></i></button>
+    </div>
+  <% }) %>
+</div>
+<% } %>

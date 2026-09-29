@@ -1,0 +1,52 @@
+<%- include('head') %>
+<%
+  const navItems = [
+    { href: '/dashboard', icon: 'layout-dashboard', label: 'Dashboard' },
+    { href: '/transactions', icon: 'arrow-left-right', label: 'Transactions' },
+    { href: '/budgets', icon: 'wallet', label: 'Budgets' },
+    { href: '/goals', icon: 'target', label: 'Goals' },
+    { href: '/recurring', icon: 'calendar-clock', label: 'Recurring' },
+    { href: '/reports', icon: 'chart-pie', label: 'Reports' },
+  ];
+  const initials = currentUser.name.split(/\s+/).map(function (p) { return p[0]; }).join('').slice(0, 2).toUpperCase();
+%>
+<body>
+  <%- include('toasts') %>
+  <div class="app">
+    <aside class="sidebar" aria-label="Main navigation">
+      <a href="/dashboard" class="brand"><span class="brand-mark"><i data-lucide="chart-no-axes-combined"></i></span>FinTrac</a>
+      <nav class="nav">
+        <% navItems.forEach(function (item) { %>
+          <a href="<%= item.href %>" class="nav-link <%= path.startsWith(item.href) || (locals.activeNav === item.href) ? 'active' : '' %>" <%= path.startsWith(item.href) ? 'aria-current=page' : '' %>>
+            <i data-lucide="<%= item.icon %>"></i><%= item.label %>
+          </a>
+        <% }) %>
+        <div class="nav-label">Account</div>
+        <a href="/settings" class="nav-link <%= path.startsWith('/settings') ? 'active' : '' %>"><i data-lucide="settings"></i>Settings</a>
+        <button type="button" class="nav-link" data-theme-toggle style="background:none;border:none;font:inherit;cursor:pointer;text-align:left">
+          <span data-theme-icon><i data-lucide="moon"></i></span><span data-theme-label>Dark mode</span>
+        </button>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-card">
+          <span class="avatar"><%= initials %></span>
+          <div class="who">
+            <strong class="truncate"><%= currentUser.name %></strong>
+            <span class="truncate"><%= currentUser.email %></span>
+          </div>
+          <form action="/auth/logout" method="POST">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <button class="icon-btn" title="Log out" aria-label="Log out"><i data-lucide="log-out"></i></button>
+          </form>
+        </div>
+      </div>
+    </aside>
+    <div class="scrim"></div>
+
+    <main class="main">
+      <div class="topbar">
+        <button type="button" class="icon-btn" data-nav-toggle aria-label="Open menu"><i data-lucide="menu"></i></button>
+        <a href="/dashboard" class="brand"><span class="brand-mark" style="width:28px;height:28px"><i data-lucide="chart-no-axes-combined"></i></span>FinTrac</a>
+        <button type="button" class="icon-btn" data-theme-toggle aria-label="Toggle dark mode"><span data-theme-icon><i data-lucide="moon"></i></span></button>
+      </div>
+      <div class="container">

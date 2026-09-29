@@ -1,0 +1,67 @@
+      </div>
+    </main>
+  </div>
+
+  <button type="button" class="fab" data-add-tx aria-label="Add transaction"><i data-lucide="plus"></i></button>
+
+  <dialog class="modal" id="tx-dialog" aria-labelledby="tx-dialog-title"
+    <% if (old.amount !== undefined && old.category !== undefined && old.frequency === undefined) { %>data-old="<%= JSON.stringify(old) %>"<% } %>>
+    <div class="modal-header">
+      <h2 id="tx-dialog-title" data-dialog-title>Add transaction</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Close"><i data-lucide="x"></i></button>
+    </div>
+    <div class="modal-body">
+      <form action="/transactions" method="POST" data-tx-form>
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <input type="hidden" name="_back" value="<%= originalUrl %>">
+        <div class="stack" style="gap:14px">
+          <div class="segmented" role="radiogroup" aria-label="Transaction type">
+            <input type="radio" name="type" id="tx-type-expense" value="expense" checked>
+            <label for="tx-type-expense" class="seg-expense"><i data-lucide="arrow-up-right"></i>Expense</label>
+            <input type="radio" name="type" id="tx-type-income" value="income">
+            <label for="tx-type-income" class="seg-income"><i data-lucide="arrow-down-left"></i>Income</label>
+          </div>
+          <div class="field">
+            <label for="tx-amount">Amount</label>
+            <input class="input amount-input num" id="tx-amount" name="amount" type="number" inputmode="decimal" step="0.01" min="0.01" placeholder="0.00" required autofocus>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label for="tx-category">Category</label>
+              <select class="select" id="tx-category" name="category" data-category-select required></select>
+            </div>
+            <div class="field">
+              <label for="tx-date">Date</label>
+              <input class="input" id="tx-date" name="date" type="date" data-today required>
+            </div>
+            <div class="field span-2">
+              <label for="tx-note">Note <span class="muted">(optional)</span></label>
+              <input class="input" id="tx-note" name="note" maxlength="200" placeholder="e.g. Lunch with friends">
+            </div>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" form="tx-delete-form" class="btn btn-danger-ghost" data-delete-tx hidden style="margin-right:auto"><i data-lucide="trash"></i>Delete</button>
+          <button type="button" class="btn btn-ghost" data-close>Cancel</button>
+          <button class="btn btn-primary"><i data-lucide="check"></i><span data-submit-label>Add transaction</span></button>
+        </div>
+      </form>
+      <form id="tx-delete-form" method="POST" data-confirm="Delete this transaction? This can't be undone.">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <input type="hidden" name="_back" value="<%= originalUrl %>">
+      </form>
+    </div>
+  </dialog>
+
+  <script type="application/json" id="categories-data"><%- json(categories.map(function (c) { return { name: c.name, type: c.type }; })) %></script>
+  <% if (locals.chart) { %>
+    <script type="application/json" id="chart-data"><%- json(Object.assign({}, chart, chartLocale)) %></script>
+  <% } %>
+  <script src="/vendor/lucide/lucide.min.js"></script>
+  <script src="/js/app.js"></script>
+  <% if (locals.chart) { %>
+    <script src="/vendor/chart.js/chart.umd.min.js"></script>
+    <script src="/js/charts.js"></script>
+  <% } %>
+</body>
+</html>

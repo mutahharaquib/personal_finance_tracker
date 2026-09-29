@@ -1,0 +1,27 @@
+<% const editData = JSON.stringify({ _id: t._id, type: t.type, amount: t.amount, category: t.category, note: t.note, date: new Date(t.date).toISOString().slice(0, 10) }); %>
+<li class="tx-item <%= locals.actions ? 'tappable' : '' %>" <% if (locals.actions) { %>data-edit-tx="<%= editData %>"<% } %>>
+  <span class="cat-icon" style="--c: <%= t.meta.color %>"><i data-lucide="<%= t.meta.icon %>"></i></span>
+  <div class="tx-main">
+    <div class="tx-title truncate"><%= t.note || t.category %></div>
+    <div class="tx-meta">
+      <span class="truncate"><%= t.category %></span>
+      <% if (!locals.hideDate) { %><span>·</span><span class="nowrap"><%= formatDate(t.date) %></span><% } %>
+      <% if (t.recurringId) { %><span class="badge" title="Added by a recurring rule"><i data-lucide="repeat"></i>Auto</span><% } %>
+    </div>
+  </div>
+  <div class="tx-amount <%= t.type === 'income' ? 'text-income' : '' %>">
+    <%= t.type === 'income' ? '+' : '−' %><%= fmt(t.amount) %>
+  </div>
+  <% if (locals.actions) { %>
+    <div class="tx-actions">
+      <button type="button" class="icon-btn" aria-label="Edit transaction" data-edit-tx="<%= editData %>">
+        <i data-lucide="pencil"></i>
+      </button>
+      <form action="/transactions/<%= t._id %>/delete" method="POST" data-confirm="Delete this transaction? This can't be undone.">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <input type="hidden" name="_back" value="<%= originalUrl %>">
+        <button class="icon-btn danger" aria-label="Delete transaction"><i data-lucide="trash"></i></button>
+      </form>
+    </div>
+  <% } %>
+</li>

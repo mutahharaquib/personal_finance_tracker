@@ -1,12 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Error</title>
-</head>
+<%- include('partials/head') %>
 <body>
-  <h1>Error</h1>
-  <p><%= message %></p>
-  <a href="/">Go Home</a>
+  <main class="center-page">
+    <div class="stack" style="align-items:center;max-width:460px">
+      <div class="code"><%= status %></div>
+      <h1><%= title %></h1>
+      <p class="muted"><%= message %></p>
+      <div class="row mt-1">
+        <a href="/" class="btn btn-secondary" data-back>Go back</a>
+        <a href="<%= signedIn ? '/dashboard' : '/' %>" class="btn btn-primary"><%= signedIn ? 'Back to dashboard' : 'Go home' %></a>
+      </div>
+    </div>
+  </main>
+  <script src="/vendor/lucide/lucide.min.js"></script>
+  <script src="/js/app.js"></script>
 </body>
 </html>
