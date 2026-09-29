@@ -1,0 +1,123 @@
+<%- include('partials/app-start') %>
+
+<div class="page-header">
+  <div>
+    <h1>Savings goals</h1>
+    <p>
+      <% if (goals.length) { %>
+        <%= fmt(totalSaved) %> saved of <%= fmt(totalTarget) %> across <%= goals.length %> goal<%= goals.length === 1 ? '' : 's' %>.
+      <% } else { %>
+        Put money aside for the things that matter.
+      <% } %>
+    </p>
+  </div>
+  <div class="page-actions">
+    <button type="button" class="btn btn-primary" data-open="goal-dialog" data-goal-new><i data-lucide="plus"></i>New goal</button>
+  </div>
+</div>
+
+<% if (goals.length) { %>
+  <div class="grid grid-3">
+    <% goals.forEach(function (item) { const g = item.goal, plan = item.plan; %>
+      <section class="card goal-card" style="--goal:<%= g.color %>">
+        <div class="row-between" style="align-items:flex-start">
+          <div style="min-width:0">
+            <h3 class="truncate"><%= g.name %></h3>
+            <div class="small muted mt-1">
+              <% if (g.deadline) { %><i data-lucide="calendar" style="display:inline;width:13px;height:13px;vertical-align:-2px"></i> by <%= formatDate(g.deadline) %><% } else { %>No deadline<% } %>
+            </div>
+          </div>
+          <div class="ring" style="--p:<%= Math.round(g.progress) %>;--c:<%= g.color %>"><span><%= Math.round(g.progress) %>%</span></div>
+        </div>
+
+        <div>
+          <div class="kpi-value" style="font-size:1.35rem"><%= fmt(g.savedAmount) %></div>
+          <div class="small muted">of <%= fmt(g.targetAmount) %></div>
+        </div>
+
+        <% if (g.completed) { %>
+          <span class="badge badge-income" style="align-self:flex-start"><i data-lucide="trophy"></i>Goal reached!</span>
+        <% } else if (plan && plan.overdue) { %>
+          <span class="badge badge-warning" style="align-self:flex-start"><i data-lucide="clock"></i><%= fmt(plan.remaining) %> to go · past deadline</span>
+        <% } else if (plan) { %>
+          <span class="small muted">Save <strong class="num" style="color:var(--text)"><%= fmt(plan.perMonth) %>/month</strong> for <%= plan.months %> month<%= plan.months === 1 ? '' : 's' %> to reach it.</span>
+        <% } else { %>
+          <span class="small muted"><%= fmt(g.targetAmount - g.savedAmount) %> to go.</span>
+        <% } %>
+
+        <form action="/goals/<%= g._id %>/contribute" method="POST" class="row" style="gap:6px">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <label for="c-<%= g._id %>" class="sr-only">Amount</label>
+          <input class="input num" id="c-<%= g._id %>" name="amount" type="number" min="0.01" step="0.01" placeholder="Amount" required style="height:36px">
+          <button class="btn btn-primary btn-sm" name="action" value="add" title="Add money"><i data-lucide="plus"></i>Add</button>
+          <button class="btn btn-secondary btn-sm" name="action" value="withdraw" title="Withdraw money" aria-label="Withdraw"><i data-lucide="minus"></i></button>
+        </form>
+
+        <div class="row" style="gap:4px;margin-top:-4px">
+          <button type="button" class="btn btn-ghost btn-sm" data-open="goal-dialog"
+            data-goal="<%= JSON.stringify({ _id: g._id, name: g.name, targetAmount: g.targetAmount, deadline: g.deadline ? g.deadline.toISOString().slice(0, 10) : '', color: g.color }) %>">
+            <i data-lucide="pencil"></i>Edit
+          </button>
+          <form action="/goals/<%= g._id %>/delete" method="POST" data-confirm="Delete the goal “<%= g.name %>”?">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <button class="btn btn-ghost btn-sm" style="color:var(--expense)"><i data-lucide="trash"></i>Delete</button>
+          </form>
+        </div>
+      </section>
+    <% }) %>
+  </div>
+<% } else { %>
+  <section class="card">
+    <div class="empty">
+      <span class="kpi-icon tone-primary"><i data-lucide="target"></i></span>
+      <h3>No goals yet</h3>
+      <p>Emergency fund, new phone, a trip with friends — set a target and a date, and we'll tell you how much to save each month.</p>
+      <button type="button" class="btn btn-primary" data-open="goal-dialog" data-goal-new><i data-lucide="plus"></i>Create a goal</button>
+    </div>
+  </section>
+<% } %>
+
+<dialog class="modal" id="goal-dialog" aria-labelledby="goal-title" <%= old.name !== undefined ? 'data-autoopen' : '' %>>
+  <div class="modal-header">
+    <h2 id="goal-title" data-goal-title>New goal</h2>
+    <button type="button" class="icon-btn" data-close aria-label="Close"><i data-lucide="x"></i></button>
+  </div>
+  <div class="modal-body">
+    <form action="/goals" method="POST" data-goal-form>
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div class="form-grid">
+        <div class="field span-2">
+          <label for="g-name">Goal name</label>
+          <input class="input" id="g-name" name="name" maxlength="60" required placeholder="e.g. Emergency fund" value="<%= old.name || '' %>">
+        </div>
+        <div class="field">
+          <label for="g-target">Target amount</label>
+          <input class="input num" id="g-target" name="targetAmount" type="number" min="0.01" step="0.01" required value="<%= old.targetAmount || '' %>">
+        </div>
+        <div class="field">
+          <label for="g-deadline">Target date <span class="muted">(optional)</span></label>
+          <input class="input" id="g-deadline" name="deadline" type="date" value="<%= old.deadline || '' %>">
+        </div>
+        <div class="field span-2" data-goal-initial>
+          <label for="g-saved">Already saved <span class="muted">(optional)</span></label>
+          <input class="input num" id="g-saved" name="savedAmount" type="number" min="0" step="0.01" placeholder="0" value="<%= old.savedAmount || '' %>">
+        </div>
+        <div class="field span-2">
+          <span class="label">Colour</span>
+          <div class="picker">
+            <% colors.forEach(function (c, i) { %>
+              <input type="radio" name="color" id="gc-<%= i %>" value="<%= c %>" <%= i === 0 ? 'checked' : '' %>>
+              <label for="gc-<%= i %>" class="swatch" style="background:<%= c %>" title="<%= c %>"><span class="sr-only"><%= c %></span></label>
+            <% }) %>
+          </div>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-ghost" data-close>Cancel</button>
+        <button class="btn btn-primary"><i data-lucide="check"></i><span data-goal-submit>Create goal</span></button>
+      </div>
+    </form>
+  </div>
+</dialog>
+
+<%- include('partials/app-end') %>
