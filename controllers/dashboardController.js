@@ -9,7 +9,7 @@ const { monthLabel, percent } = require("../utils/format");
 
 exports.show = async (req, res) => {
   const userId = req.user._id;
-  const today = todayUTC();
+  const today = todayUTC(req.timeZone);
   const month = startOfMonth(today);
   const nextMonth = addMonths(month, 1);
   const prevMonth = addMonths(month, -1);

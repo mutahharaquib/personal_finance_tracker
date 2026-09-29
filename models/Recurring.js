@@ -12,6 +12,9 @@ const recurringSchema = new mongoose.Schema(
     frequency: { type: String, enum: FREQUENCIES, required: true },
     // Day the next transaction will be posted (UTC midnight).
     nextDate: { type: Date, required: true },
+    // Day of month the rule started on, so monthly/yearly dates don't drift
+    // after short months (31st → Feb 28 → Mar 31).
+    anchorDay: { type: Number, min: 1, max: 31 },
     endDate: Date,
     active: { type: Boolean, default: true },
   },

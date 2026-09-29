@@ -280,6 +280,19 @@ describe("budgets, goals, recurring, reports, settings", () => {
     assert.equal(await count(), 6); // only today's occurrence
   });
 
+  test("recurring rules remember their start day", async () => {
+    await agent.form("/recurring", { type: "expense", amount: "100", category: "Rent", note: "Month-end rent", frequency: "monthly", date: "2027-01-31" });
+    const rule = await Recurring.findOne({ note: "Month-end rent" });
+    assert.equal(rule.anchorDay, 31);
+  });
+
+  test("a timezone cookie is honoured and a bogus one is ignored", async () => {
+    const withZone = await agent.get("/dashboard").set("Cookie", "tz=Asia%2FKolkata");
+    assert.equal(withZone.status, 200);
+    const bogus = await agent.get("/budgets").set("Cookie", "tz=%E0%A4%A; tz=Mars/Olympus");
+    assert.equal(bogus.status, 200);
+  });
+
   test("reports render for every preset and custom ranges", async () => {
     for (const range of ["this-month", "last-month", "3m", "6m", "ytd", "12m"]) {
       const res = await agent.get(`/reports?range=${range}`);

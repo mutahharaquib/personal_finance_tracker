@@ -128,7 +128,7 @@ exports.exportCSV = async (req, res) => {
     ...rows.map((t) => [toDateInput(t.date), t.type, t.category, t.amount.toFixed(2), t.note || ""]),
   ]);
   res.set("Content-Type", "text/csv; charset=utf-8");
-  res.set("Content-Disposition", `attachment; filename="fintrac-transactions-${toDateInput(todayUTC())}.csv"`);
+  res.set("Content-Disposition", `attachment; filename="fintrac-transactions-${toDateInput(todayUTC(req.timeZone))}.csv"`);
   res.send("﻿" + csv); // BOM so Excel detects UTF-8
 };
 

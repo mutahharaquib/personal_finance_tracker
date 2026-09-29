@@ -16,8 +16,7 @@ const PRESETS = {
 };
 
 // Resolves the requested range to [from, to) in UTC days.
-function resolveRange(query) {
-  const today = todayUTC();
+function resolveRange(query, today) {
   const month = startOfMonth(today);
   const range = PRESETS[query.range] ? query.range : "this-month";
   switch (range) {
@@ -38,7 +37,7 @@ function resolveRange(query) {
 
 exports.index = async (req, res) => {
   const userId = req.user._id;
-  const { range, from, to, invalid } = resolveRange(req.query);
+  const { range, from, to, invalid } = resolveRange(req.query, todayUTC(req.timeZone));
   if (invalid && req.query.range === "custom") {
     res.locals.flash.push({ type: "error", message: "Pick a valid start and end date for a custom range." });
   }
@@ -75,7 +74,7 @@ exports.index = async (req, res) => {
   const change = (now, before) => (before > 0 ? percent(now - before, before) : null);
 
   // Clamp "days so far" for ranges that include the future (e.g. this month).
-  const elapsedDays = Math.max(1, Math.min(days, Math.round((addDays(todayUTC(), 1) - from) / DAY_MS)));
+  const elapsedDays = Math.max(1, Math.min(days, Math.round((addDays(todayUTC(req.timeZone), 1) - from) / DAY_MS)));
 
   res.render("reports", {
     title: "Reports",

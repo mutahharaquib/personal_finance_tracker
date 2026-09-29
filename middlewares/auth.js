@@ -3,6 +3,7 @@ const { getCategories } = require("../services/categories");
 const { processDueRecurring } = require("../services/recurring");
 const { formatMoney } = require("../utils/format");
 const { CURRENCIES } = require("../config/constants");
+const { todayUTC } = require("../utils/dates");
 
 // Guards app pages: loads the signed-in user, their categories (used by the
 // global "add transaction" dialog) and posts any recurring transactions due.
@@ -18,7 +19,7 @@ async function requireLogin(req, res, next) {
     return req.session.destroy(() => res.redirect("/auth/login"));
   }
 
-  if (req.method === "GET") await processDueRecurring(user._id);
+  if (req.method === "GET") await processDueRecurring(user._id, todayUTC(req.timeZone));
 
   req.user = user;
   res.locals.currentUser = user;

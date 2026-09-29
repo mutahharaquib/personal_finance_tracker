@@ -1,7 +1,7 @@
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
 const { parseCSV, toCSV } = require("../utils/csv");
-const { addMonths, parseDateInput, advance } = require("../utils/dates");
+const { addMonths, parseDateInput, advance, todayUTC } = require("../utils/dates");
 const { parseAmount, passwordProblem, transactionFields } = require("../utils/validate");
 
 test("CSV round-trips quotes, commas and newlines", () => {
@@ -29,6 +29,26 @@ test("advance supports every frequency", () => {
   assert.equal(advance(d, "weekly").toISOString().slice(0, 10), "2026-05-17");
   assert.equal(advance(d, "monthly").toISOString().slice(0, 10), "2026-06-10");
   assert.equal(advance(d, "yearly").toISOString().slice(0, 10), "2027-05-10");
+});
+
+test("monthly and yearly rules keep their day after short months", () => {
+  const walk = (start, frequency, steps) => {
+    const anchor = parseDateInput(start).getUTCDate();
+    let d = parseDateInput(start);
+    const out = [];
+    for (let i = 0; i < steps; i++) { out.push(d.toISOString().slice(0, 10)); d = advance(d, frequency, anchor); }
+    return out;
+  };
+  assert.deepEqual(walk("2026-01-31", "monthly", 4), ["2026-01-31", "2026-02-28", "2026-03-31", "2026-04-30"]);
+  assert.deepEqual(walk("2024-02-29", "yearly", 5), ["2024-02-29", "2025-02-28", "2026-02-28", "2027-02-28", "2028-02-29"]);
+});
+
+test("todayUTC uses the user's timezone", (t) => {
+  t.mock.timers.enable({ apis: ["Date"], now: new Date("2026-09-30T20:00:00Z") });
+  assert.equal(todayUTC("Asia/Kolkata").toISOString(), "2026-10-01T00:00:00.000Z");
+  assert.equal(todayUTC("America/New_York").toISOString(), "2026-09-30T00:00:00.000Z");
+  assert.equal(todayUTC().toISOString(), "2026-09-30T00:00:00.000Z");
+  assert.equal(todayUTC("Not/AZone").toISOString(), "2026-09-30T00:00:00.000Z");
 });
 
 test("parseDateInput rejects impossible dates", () => {

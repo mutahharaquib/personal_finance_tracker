@@ -32,7 +32,7 @@ function monthlyNeeded(goal, today) {
 
 exports.index = async (req, res) => {
   const goals = await Goal.find({ userId: req.user._id }).sort({ createdAt: -1 });
-  const today = todayUTC();
+  const today = todayUTC(req.timeZone);
   const totalSaved = goals.reduce((s, g) => s + g.savedAmount, 0);
   const totalTarget = goals.reduce((s, g) => s + g.targetAmount, 0);
 

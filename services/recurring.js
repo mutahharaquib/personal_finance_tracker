@@ -8,8 +8,7 @@ const MAX_POSTINGS_PER_RULE = 400;
 // Posts every transaction that has come due for the user's active recurring rules.
 // Each step advances `nextDate` with a compare-and-set so concurrent requests
 // can never post the same occurrence twice.
-async function processDueRecurring(userId) {
-  const today = todayUTC();
+async function processDueRecurring(userId, today = todayUTC()) {
   const rules = await Recurring.find({ userId, active: true, nextDate: { $lte: today } });
   let posted = 0;
 
@@ -20,7 +19,7 @@ async function processDueRecurring(userId) {
         await Recurring.updateOne({ _id: rule._id }, { active: false });
         break;
       }
-      const next = advance(due, rule.frequency);
+      const next = advance(due, rule.frequency, rule.anchorDay);
       const claimed = await Recurring.updateOne({ _id: rule._id, nextDate: due }, { nextDate: next });
       if (claimed.modifiedCount === 0) break; // another request got here first
 

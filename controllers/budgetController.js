@@ -9,9 +9,9 @@ const { notFoundError } = require("../utils/http");
 
 exports.index = async (req, res) => {
   const userId = req.user._id;
-  const month = parseMonthParam(req.query.month);
+  const month = parseMonthParam(req.query.month, req.timeZone);
   const nextMonth = addMonths(month, 1);
-  const today = todayUTC();
+  const today = todayUTC(req.timeZone);
   const isCurrent = month.getTime() === startOfMonth(today).getTime();
 
   const [budgets, spentRows, monthTotals] = await Promise.all([

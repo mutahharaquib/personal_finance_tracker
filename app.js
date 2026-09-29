@@ -8,6 +8,7 @@ const csrf = require("./middlewares/csrf");
 const flash = require("./middlewares/flash");
 const { notFound, errorHandler } = require("./middlewares/errors");
 const { formatDate, monthLabel, formatMoney } = require("./utils/format");
+const { isValidTimeZone } = require("./utils/dates");
 
 function createApp({ sessionStore, sessionSecret }) {
   const app = express();
@@ -64,6 +65,15 @@ function createApp({ sessionStore, sessionSecret }) {
 
   app.use(flash);
   app.use(csrf);
+
+  // The browser reports its timezone in a `tz` cookie (see partials/head.ejs).
+  app.use((req, res, next) => {
+    const match = /(?:^|;\s*)tz=([^;]+)/.exec(req.headers.cookie || "");
+    let tz = null;
+    try { tz = match && decodeURIComponent(match[1]); } catch { tz = null; }
+    req.timeZone = isValidTimeZone(tz) ? tz : process.env.APP_TIMEZONE;
+    next();
+  });
 
   // Helpers available in every view.
   app.use((req, res, next) => {

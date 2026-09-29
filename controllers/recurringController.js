@@ -39,7 +39,7 @@ exports.create = async (req, res) => {
   if (!frequency) errors.push("Choose how often this repeats.");
   if (endRaw && !endDate) errors.push("Enter a valid end date.");
   if (endDate && value.date && endDate < value.date) errors.push("End date must be after the start date.");
-  if (value.date && value.date > addMonths(todayUTC(), 12 * 5)) errors.push("Start date must be within the next 5 years.");
+  if (value.date && value.date > addMonths(todayUTC(req.timeZone), 12 * 5)) errors.push("Start date must be within the next 5 years.");
 
   if (errors.length) {
     req.keepInput(req.body);
@@ -48,8 +48,8 @@ exports.create = async (req, res) => {
   }
 
   const { date, ...rest } = value;
-  await Recurring.create({ userId: req.user._id, ...rest, frequency, nextDate: date, endDate: endDate || undefined });
-  const posted = await processDueRecurring(req.user._id);
+  await Recurring.create({ userId: req.user._id, ...rest, frequency, nextDate: date, anchorDay: date.getUTCDate(), endDate: endDate || undefined });
+  const posted = await processDueRecurring(req.user._id, todayUTC(req.timeZone));
   req.flash(
     "success",
     posted
@@ -66,8 +66,8 @@ exports.toggle = async (req, res) => {
   rule.active = !rule.active;
   if (rule.active) {
     // Resuming shouldn't back-fill everything that was skipped while paused.
-    const today = todayUTC();
-    while (rule.nextDate < today) rule.nextDate = advance(rule.nextDate, rule.frequency);
+    const today = todayUTC(req.timeZone);
+    while (rule.nextDate < today) rule.nextDate = advance(rule.nextDate, rule.frequency, rule.anchorDay);
   }
   await rule.save();
   req.flash("success", rule.active ? "Recurring rule resumed." : "Recurring rule paused.");

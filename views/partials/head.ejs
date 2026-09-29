@@ -18,6 +18,10 @@
       try { t = localStorage.getItem("theme"); } catch (e) {}
       if (t !== "light" && t !== "dark") t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
       document.documentElement.dataset.theme = t;
+      // Lets the server work out "today" in the user's own timezone.
+      try {
+        document.cookie = "tz=" + encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone) + ";path=/;max-age=31536000;samesite=lax";
+      } catch (e) {}
     })();
   </script>
 </head>
