@@ -1,176 +1,96 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Finance Tracker</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background: linear-gradient(120deg, #0f2027, #2c5364 60%, #43e97b 100%);
-      color: #f8fafc;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 40px;
-    }
-
-    .logo {
-      font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      font-weight: 900;
-      font-size: 2.2rem;
-      letter-spacing: 2px;
-      color: #43e97b;
-      background: linear-gradient(90deg, #43e97b 30%, #38f9d7 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      text-fill-color: transparent;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      user-select: none;
-    }
-
-    .auth-links a {
-      margin-left: 15px;
-      font-weight: 600;
-      color: #f8fafc;
-      text-decoration: none;
-      padding: 8px 16px;
-      border-radius: 25px;
-      transition: background 0.2s ease-in-out;
-    }
-
-    .auth-links a.btn-login:hover,
-    .auth-links a.btn-register:hover {
-      background-color: rgba(67, 233, 123, 0.18);
-      color: #43e97b;
-    }
-
-    .hero {
-      flex-grow: 1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: 2rem;
-    }
-
-    .hero h1 {
-      font-size: 3rem;
-      font-weight: 700;
-      margin-bottom: 1rem;
-      color: #43e97b;
-      font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    .hero p {
-      font-size: 1.25rem;
-      max-width: 600px;
-      margin: 0 auto 2rem;
-      color: #d1fae5;
-    }
-
-    .btn-start {
-      background: linear-gradient(90deg, #43e97b 30%, #38f9d7 100%);
-      color: #0f2027;
-      font-weight: bold;
-      padding: 0.75rem 1.5rem;
-      border-radius: 30px;
-      text-transform: uppercase;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      transition: all 0.2s ease-in-out;
-      text-decoration: none;
-    }
-
-    .btn-start:hover {
-      background: #43e97b;
-      color: #fff;
-      transform: translateY(-2px) scale(1.04);
-    }
-
-    @media (max-width: 576px) {
-      .header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      .auth-links {
-        margin-top: 10px;
-      }
-    }
-  </style>
-  <!-- Google Fonts for Montserrat -->
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
-</head>
-<body>
-
-  <!-- Custom Header -->
-  <div class="header">
-    <div class="logo">
-      <span style="font-size:2.7rem;line-height:1;"></span>FinTrac
+<%- include('partials/head', { extraCss: '/css/landing.css' }) %>
+<body class="landing">
+  <header class="l-nav">
+    <div class="l-container">
+      <a href="/" class="brand"><span class="brand-mark"><i data-lucide="chart-no-axes-combined"></i></span>FinTrac</a>
+      <nav class="l-nav-links" aria-label="Account">
+        <button type="button" class="icon-btn" data-theme-toggle aria-label="Toggle dark mode"><span data-theme-icon><i data-lucide="moon"></i></span></button>
+        <a href="/auth/login" class="btn btn-ghost">Log in</a>
+        <a href="/auth/register" class="btn btn-primary">Get started</a>
+      </nav>
     </div>
-    <div class="auth-links">
-      <a href="/auth/login" class="btn-login">Login</a>
-      <a href="/auth/register" class="btn-register">Register</a>
-    </div>
-  </div>
+  </header>
 
-  <!-- Hero Section -->
-  <section class="hero">
-    <div>
-      <h1 style="font-size:3.2rem;letter-spacing:-1px;">Take Control of Your Money</h1>
-      <p style="font-size:1.3rem;color:#e0e7ff;max-width:650px;margin:0 auto 2.5rem;">
-        Track your expenses, set savings goals, and unlock your financial potential. FinTrac empowers you to manage your money smartly—perfect for students, young professionals, and anyone ready to build better habits.
-      </p>
-      <a href="/auth/register" class="btn-start" style="font-size:1.1rem;">Start Saving Today</a>
-    </div>
-  </section>
+  <main>
+    <section class="hero l-container">
+      <span class="eyebrow"><i data-lucide="sparkles"></i>Budgets, goals, recurring bills &amp; reports</span>
+      <h1>Take control of your money, <span class="grad">without the spreadsheet.</span></h1>
+      <p class="sub">FinTrac helps students, young professionals and families track every expense, stick to a budget and reach savings goals — in a clean app that works on any device.</p>
+      <div class="hero-ctas">
+        <a href="/auth/register" class="btn btn-primary btn-lg">Start for free <i data-lucide="arrow-right"></i></a>
+        <a href="/auth/login" class="btn btn-secondary btn-lg">I have an account</a>
+      </div>
+      <p class="hero-note">No credit card. No bank login. Your data stays yours — export it any time.</p>
 
-  <!-- Benefits Section -->
-  <section style="background:rgba(255,255,255,0.08);backdrop-filter:blur(2px);border-radius:24px;margin:2rem auto 0;max-width:900px;padding:2.5rem 1.5rem;box-shadow:0 8px 32px rgba(0,0,0,0.18);">
-    <h2 style="color:#fff;font-size:2rem;font-weight:700;text-align:center;margin-bottom:1.5rem;">Why Track Your Money?</h2>
-    <div class="row" style="gap:1.5rem;justify-content:center;">
-      <div class="col-md-4 col-12 mb-3">
-        <div style="background:rgba(39,94,254,0.13);border-radius:18px;padding:1.5rem;text-align:center;height:100%;box-shadow:0 2px 8px rgba(0,0,0,0.07);">
-          <div style="font-size:2.2rem;margin-bottom:0.7rem;">��</div>
-          <h4 style="font-weight:600;">Build Smart Habits</h4>
-          <p style="color:#e0e7ff;">Understand your spending patterns and make informed decisions for a brighter financial future.</p>
+      <div class="preview" aria-hidden="true">
+        <div class="preview-inner">
+          <div class="card kpi kpi-hero"><span class="kpi-label">Total balance</span><div class="kpi-value">₹84,250</div></div>
+          <div class="card kpi"><span class="kpi-label">Income</span><div class="kpi-value text-income">₹62,000</div></div>
+          <div class="card kpi"><span class="kpi-label">Spent</span><div class="kpi-value text-expense">₹31,480</div></div>
+          <div class="card kpi"><span class="kpi-label">Savings rate</span><div class="kpi-value">49%</div></div>
+          <div class="card preview-chart">
+            <div class="row-between"><strong>Cash flow</strong><span class="small muted">Last 6 months</span></div>
+            <div class="bars">
+              <div><span class="i" style="height:70%"></span><span class="e" style="height:48%"></span></div>
+              <div><span class="i" style="height:72%"></span><span class="e" style="height:60%"></span></div>
+              <div><span class="i" style="height:68%"></span><span class="e" style="height:41%"></span></div>
+              <div><span class="i" style="height:85%"></span><span class="e" style="height:52%"></span></div>
+              <div><span class="i" style="height:80%"></span><span class="e" style="height:38%"></span></div>
+              <div><span class="i" style="height:92%"></span><span class="e" style="height:46%"></span></div>
+            </div>
+          </div>
+          <div class="card preview-side stack" style="gap:12px">
+            <strong>Budgets</strong>
+            <div><div class="row-between small"><span>Food</span><span class="muted">70%</span></div><div class="progress ok mt-1"><span style="width:70%"></span></div></div>
+            <div><div class="row-between small"><span>Shopping</span><span class="muted">92%</span></div><div class="progress warn mt-1"><span style="width:92%"></span></div></div>
+            <div><div class="row-between small"><span>Transport</span><span class="muted">35%</span></div><div class="progress ok mt-1"><span style="width:35%"></span></div></div>
+          </div>
         </div>
       </div>
-      <div class="col-md-4 col-12 mb-3">
-        <div style="background:rgba(39,94,254,0.13);border-radius:18px;padding:1.5rem;text-align:center;height:100%;box-shadow:0 2px 8px rgba(0,0,0,0.07);">
-          <div style="font-size:2.2rem;margin-bottom:0.7rem;">📈</div>
-          <h4 style="font-weight:600;">Achieve Your Goals</h4>
-          <p style="color:#e0e7ff;">Set savings targets, track progress, and celebrate milestones—whether it's a new gadget or your dream trip.</p>
-        </div>
-      </div>
-      <div class="col-md-4 col-12 mb-3">
-        <div style="background:rgba(39,94,254,0.13);border-radius:18px;padding:1.5rem;text-align:center;height:100%;box-shadow:0 2px 8px rgba(0,0,0,0.07);">
-          <div style="font-size:2.2rem;margin-bottom:0.7rem;">🛡️</div>
-          <h4 style="font-weight:600;">Stay Stress-Free</h4>
-          <p style="color:#e0e7ff;">No more end-of-month surprises. Stay on top of your finances and enjoy peace of mind.</p>
-        </div>
-      </div>
-    </div>
-    <div style="text-align:center;margin-top:2rem;">
-      <a href="/auth/register" class="btn-start" style="background:#2575fc;color:#fff;">Get Started for Free</a>
-    </div>
-  </section>
+    </section>
 
-  <!-- Footer -->
-  <footer style="margin-top:auto;padding:1.5rem 0;text-align:center;color:#cbd5e1;font-size:1rem;">
-    &copy; <%= new Date().getFullYear() %> FinTrac. Empowering young people to master their money.
+    <section class="section l-container" id="features">
+      <div class="section-head">
+        <h2>Everything you need. Nothing you don't.</h2>
+        <p>All the tools of a modern money app, designed to be understood in seconds.</p>
+      </div>
+      <div class="features">
+        <div class="card feature"><span class="kpi-icon tone-primary"><i data-lucide="zap"></i></span><h3>Log in seconds</h3><p>Add income or expenses from anywhere with one tap — or press <kbd>N</kbd> on desktop.</p></div>
+        <div class="card feature"><span class="kpi-icon tone-income"><i data-lucide="wallet"></i></span><h3>Smart budgets</h3><p>Monthly limits per category with daily allowance and alerts before you overspend.</p></div>
+        <div class="card feature"><span class="kpi-icon tone-warning"><i data-lucide="target"></i></span><h3>Savings goals</h3><p>Set a target and a date — we tell you exactly how much to put aside each month.</p></div>
+        <div class="card feature"><span class="kpi-icon tone-info"><i data-lucide="calendar-clock"></i></span><h3>Recurring bills</h3><p>Salary, rent and subscriptions are added automatically when they're due.</p></div>
+        <div class="card feature"><span class="kpi-icon tone-expense"><i data-lucide="chart-pie"></i></span><h3>Clear reports</h3><p>Trends, category breakdowns, top expenses and period-over-period comparisons.</p></div>
+        <div class="card feature"><span class="kpi-icon tone-primary"><i data-lucide="file-spreadsheet"></i></span><h3>Import &amp; export</h3><p>Bring in your bank's CSV and export everything to Excel or Google Sheets.</p></div>
+      </div>
+    </section>
+
+    <section class="section l-container">
+      <div class="section-head">
+        <h2>Up and running in a minute</h2>
+        <p>No setup wizard, no linking bank accounts.</p>
+      </div>
+      <div class="steps">
+        <div class="card step"><h3>Create your free account</h3><p>Just a name, email and password. Pick your currency.</p></div>
+        <div class="card step"><h3>Add what comes in and goes out</h3><p>Starter categories are ready. Add recurring items once and forget them.</p></div>
+        <div class="card step"><h3>Watch your habits improve</h3><p>Budgets, goals and insights show exactly where you can save more.</p></div>
+      </div>
+
+      <div class="cta-band">
+        <h2>Your future self will thank you.</h2>
+        <p>Join FinTrac today and see where your money really goes.</p>
+        <a href="/auth/register" class="btn btn-primary btn-lg">Create free account <i data-lucide="arrow-right"></i></a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="l-footer">
+    <div class="l-container">
+      <span>&copy; <%= new Date().getFullYear() %> FinTrac · Empowering people to master their money.</span>
+      <span class="row" style="gap:16px"><a href="/auth/login">Log in</a><a href="/auth/register">Sign up</a></span>
+    </div>
   </footer>
 
+  <script src="/vendor/lucide/lucide.min.js"></script>
+  <script src="/js/app.js"></script>
 </body>
 </html>
