@@ -29,7 +29,7 @@
   <div class="card kpi">
     <div class="kpi-top"><span class="kpi-label">Spent this month</span><span class="kpi-icon tone-expense"><i data-lucide="arrow-up-right"></i></span></div>
     <div class="kpi-value text-expense"><%= fmt(thisMonth.expense) %></div>
-    <div class="kpi-sub">
+    <div class="kpi-sub <%= monthlyBudget > 0 && thisMonth.expense > monthlyBudget ? 'text-expense' : '' %>">
       <% if (monthlyBudget > 0) { %>
         <%= Math.round(thisMonth.expense / monthlyBudget * 100) %>% of <%= fmt(monthlyBudget, { compact: true }) %> budget
       <% } else { %>

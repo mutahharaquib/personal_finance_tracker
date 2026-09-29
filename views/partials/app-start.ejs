@@ -8,7 +8,9 @@
     { href: '/recurring', icon: 'calendar-clock', label: 'Recurring' },
     { href: '/reports', icon: 'chart-pie', label: 'Reports' },
   ];
-  const initials = currentUser.name.split(/\s+/).map(function (p) { return p[0]; }).join('').slice(0, 2).toUpperCase();
+  // First letter of the first two words that contain letters ("Sara Ali" → "SA").
+  const initials = (currentUser.name.match(/\p{L}[^\s]*/gu) || ['?'])
+    .slice(0, 2).map(function (w) { return w.match(/\p{L}/u)[0]; }).join('').toUpperCase();
 %>
 <body>
   <%- include('toasts') %>

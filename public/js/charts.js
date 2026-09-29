@@ -38,11 +38,14 @@
     };
   }
 
-  function axes() {
+  // With no data Chart.js picks a 0–1 scale (₹0.2, ₹0.4…); give it a sensible range.
+  function axes(values = []) {
+    const empty = !values.some((v) => v > 0);
     return {
       x: { grid: { display: false }, border: { display: false } },
       y: {
         beginAtZero: true,
+        suggestedMax: empty ? 1000 : undefined,
         grid: { color: css("--border") },
         border: { display: false },
         ticks: { callback: (v) => compact.format(v), maxTicksLimit: 6 },
@@ -61,7 +64,7 @@
             { label: "Expenses", data: d.expense, backgroundColor: css("--expense"), borderRadius: 6, maxBarThickness: 28 },
           ],
         },
-        options: { ...baseOptions(), scales: axes() },
+        options: { ...baseOptions(), scales: axes(d.income.concat(d.expense)) },
       });
     },
 
@@ -73,7 +76,7 @@
       return new Chart(canvas, {
         type: "line",
         data: { labels: d.labels, datasets: [line("Income", d.income, css("--income")), line("Expenses", d.expense, css("--expense"))] },
-        options: { ...baseOptions(), scales: { ...axes(), x: { grid: { display: false }, border: { display: false }, ticks: { maxTicksLimit: 8 } } } },
+        options: { ...baseOptions(), scales: { ...axes(d.income.concat(d.expense)), x: { grid: { display: false }, border: { display: false }, ticks: { maxTicksLimit: 8 } } } },
       });
     },
 
