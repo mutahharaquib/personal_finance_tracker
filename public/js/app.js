@@ -136,7 +136,14 @@
   $$("[data-budget-category]").forEach((btn) =>
     btn.addEventListener("click", () => {
       const form = $("#budget-dialog form");
-      form.category.value = btn.dataset.budgetCategory;
+      const name = btn.dataset.budgetCategory;
+      // The category may have been deleted (or come from an import) but still has spending.
+      if (!Array.from(form.category.options).some((o) => o.value === name)) {
+        const opt = document.createElement("option");
+        opt.value = opt.textContent = name;
+        form.category.appendChild(opt);
+      }
+      form.category.value = name;
       form.amount.value = btn.dataset.budgetAmount || "";
       form.amount.focus();
     })
