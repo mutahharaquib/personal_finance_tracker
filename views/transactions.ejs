@@ -1,0 +1,141 @@
+<%- include('partials/app-start') %>
+
+<div class="page-header">
+  <div>
+    <h1>Transactions</h1>
+    <p><%= count %> transaction<%= count === 1 ? '' : 's' %><%= filtered ? ' match your filters' : ' in total' %></p>
+  </div>
+  <div class="page-actions">
+    <button type="button" class="btn btn-secondary" data-open="import-dialog"><i data-lucide="upload"></i>Import</button>
+    <a href="<%= exportUrl %>" class="btn btn-secondary"><i data-lucide="download"></i>Export CSV</a>
+    <button type="button" class="btn btn-primary btn-add" data-add-tx><i data-lucide="plus"></i>Add</button>
+  </div>
+</div>
+
+<form class="card filters" method="GET" action="/transactions" role="search">
+  <div class="field search">
+    <label for="f-q" class="sr-only">Search</label>
+    <div class="input-icon">
+      <i data-lucide="search"></i>
+      <input class="input" id="f-q" name="q" value="<%= params.q %>" placeholder="Search notes or categories">
+    </div>
+  </div>
+  <div class="field">
+    <label for="f-type" class="sr-only">Type</label>
+    <select class="select" id="f-type" name="type" data-autosubmit>
+      <option value="">All types</option>
+      <option value="income" <%= params.type === 'income' ? 'selected' : '' %>>Income</option>
+      <option value="expense" <%= params.type === 'expense' ? 'selected' : '' %>>Expenses</option>
+    </select>
+  </div>
+  <div class="field">
+    <label for="f-cat" class="sr-only">Category</label>
+    <select class="select" id="f-cat" name="category" data-autosubmit>
+      <option value="">All categories</option>
+      <% ['expense', 'income'].forEach(function (type) { %>
+        <optgroup label="<%= type === 'expense' ? 'Expenses' : 'Income' %>">
+          <% categories.filter(function (c) { return c.type === type; }).forEach(function (c) { %>
+            <option value="<%= c.name %>" <%= params.category === c.name ? 'selected' : '' %>><%= c.name %></option>
+          <% }) %>
+        </optgroup>
+      <% }) %>
+    </select>
+  </div>
+  <div class="field">
+    <label for="f-from" class="label small">From</label>
+    <input class="input" type="date" id="f-from" name="from" value="<%= params.from %>">
+  </div>
+  <div class="field">
+    <label for="f-to" class="label small">To</label>
+    <input class="input" type="date" id="f-to" name="to" value="<%= params.to %>">
+  </div>
+  <div class="field">
+    <label for="f-sort" class="sr-only">Sort</label>
+    <select class="select" id="f-sort" name="sort" data-autosubmit>
+      <option value="newest" <%= params.sort === 'newest' ? 'selected' : '' %>>Newest first</option>
+      <option value="oldest" <%= params.sort === 'oldest' ? 'selected' : '' %>>Oldest first</option>
+      <option value="highest" <%= params.sort === 'highest' ? 'selected' : '' %>>Highest amount</option>
+      <option value="lowest" <%= params.sort === 'lowest' ? 'selected' : '' %>>Lowest amount</option>
+    </select>
+  </div>
+  <div class="row" style="gap:6px">
+    <button class="btn btn-primary" style="height:38px"><i data-lucide="funnel"></i>Filter</button>
+    <% if (filtered) { %><a href="/transactions" class="btn btn-ghost" style="height:38px">Clear</a><% } %>
+  </div>
+</form>
+
+<section class="card card-flush mt-2">
+  <div class="summary-strip">
+    <div><span>Income</span><strong class="text-income"><%= fmt(sums.income) %></strong></div>
+    <div><span>Expenses</span><strong class="text-expense"><%= fmt(sums.expense) %></strong></div>
+    <div><span>Net</span><strong><%= fmt(sums.income - sums.expense) %></strong></div>
+  </div>
+
+  <% if (transactions.length) { %>
+    <ul class="tx-list">
+      <% let lastDay = null; %>
+      <% transactions.forEach(function (t) { %>
+        <% const day = new Date(t.date).toISOString().slice(0, 10); %>
+        <% if (params.sort === 'newest' || params.sort === 'oldest') { %>
+          <% if (day !== lastDay) { lastDay = day; %>
+            <li class="day-heading"><%= formatDate(t.date, { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' }) %></li>
+          <% } %>
+          <%- include('partials/tx-item', { t: t, actions: true, hideDate: true }) %>
+        <% } else { %>
+          <%- include('partials/tx-item', { t: t, actions: true }) %>
+        <% } %>
+      <% }) %>
+    </ul>
+    <% if (pages > 1) { %>
+      <nav class="pagination" aria-label="Pagination">
+        <span>Page <%= page %> of <%= pages %></span>
+        <div class="row">
+          <% if (page > 1) { %><a class="btn btn-secondary btn-sm" href="/transactions<%= pageUrl(page - 1) %>"><i data-lucide="chevron-left"></i>Previous</a><% } %>
+          <% if (page < pages) { %><a class="btn btn-secondary btn-sm" href="/transactions<%= pageUrl(page + 1) %>">Next<i data-lucide="chevron-right"></i></a><% } %>
+        </div>
+      </nav>
+    <% } %>
+  <% } else { %>
+    <div class="empty">
+      <span class="kpi-icon tone-primary"><i data-lucide="<%= filtered ? 'search-x' : 'receipt' %>"></i></span>
+      <h3><%= filtered ? 'Nothing matches those filters' : 'No transactions yet' %></h3>
+      <p><%= filtered ? 'Try a different search or clear the filters.' : 'Record your first income or expense, or import a CSV exported from your bank.' %></p>
+      <% if (filtered) { %>
+        <a href="/transactions" class="btn btn-secondary">Clear filters</a>
+      <% } else { %>
+        <button type="button" class="btn btn-primary" data-add-tx><i data-lucide="plus"></i>Add transaction</button>
+      <% } %>
+    </div>
+  <% } %>
+</section>
+
+<dialog class="modal" id="import-dialog" aria-labelledby="import-title">
+  <div class="modal-header">
+    <h2 id="import-title">Import transactions</h2>
+    <button type="button" class="icon-btn" data-close aria-label="Close"><i data-lucide="x"></i></button>
+  </div>
+  <div class="modal-body">
+    <form action="/transactions/import" method="POST" class="stack" style="gap:14px">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <p class="small muted">
+        Upload a CSV with a header row. Required columns: <strong>Date</strong> (YYYY-MM-DD or DD/MM/YYYY) and <strong>Amount</strong>.
+        Optional: <strong>Type</strong> (income/expense), <strong>Category</strong>, <strong>Note</strong>.
+        Without a Type column, negative amounts are treated as expenses.
+      </p>
+      <div class="field">
+        <label for="csv-file">CSV file</label>
+        <input class="input" type="file" id="csv-file" accept=".csv,text/csv" data-csv-file="csv-text" style="padding:8px">
+      </div>
+      <div class="field">
+        <label for="csv-text">…or paste CSV</label>
+        <textarea class="textarea" id="csv-text" name="csv" required placeholder="Date,Type,Category,Amount,Note&#10;2026-09-01,income,Salary,50000,September salary&#10;2026-09-02,expense,Groceries,1250.50,Weekly shop"></textarea>
+      </div>
+      <div class="form-actions" style="margin-top:0">
+        <button type="button" class="btn btn-ghost" data-close>Cancel</button>
+        <button class="btn btn-primary"><i data-lucide="upload"></i>Import</button>
+      </div>
+    </form>
+  </div>
+</dialog>
+
+<%- include('partials/app-end') %>
