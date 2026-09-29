@@ -1,54 +1,31 @@
 const express = require("express");
-const router = express.Router();
-const authController = require("../controllers/authController");
+const { rateLimit } = require("express-rate-limit");
+const auth = require("../controllers/authController");
+const { guestOnly, requireLogin } = require("../middlewares/auth");
 
-router.get("/register", authController.getRegister);
-// router.post("/register", authController.postRegister); // Updated to use registerUser method
-router.post("/register", authController.registerUser);
-router.get("/login", authController.getLogin);
-router.post("/login", authController.postLogin);
-router.get("/logout", authController.logout);
+const router = express.Router();
+
+// Slow down password guessing and signup spam.
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 20,
+  standardHeaders: "draft-7",
+  legacyHeaders: false,
+  skip: () => process.env.NODE_ENV === "test",
+  handler: (req, res) => {
+    req.flash("error", "Too many attempts. Please wait a few minutes and try again.");
+    res.redirect(req.originalUrl);
+  },
+});
+
+router.get("/login", guestOnly, auth.getLogin);
+router.post("/login", guestOnly, authLimiter, auth.postLogin);
+router.get("/register", guestOnly, auth.getRegister);
+router.post("/register", guestOnly, authLimiter, auth.postRegister);
+router.get("/forgot", guestOnly, auth.getForgot);
+router.post("/forgot", guestOnly, authLimiter, auth.postForgot);
+router.get("/reset/:token", guestOnly, auth.getReset);
+router.post("/reset/:token", guestOnly, authLimiter, auth.postReset);
+router.post("/logout", requireLogin, auth.logout);
 
 module.exports = router;
-
-// const express = require("express");
-// const router = express.Router();
-// const bcrypt = require("bcrypt");
-// const User = require("../models/User");
-
-// // Register
-// router.get("/register", (req, res) => {
-//   res.render("register");
-// });
-
-// router.post("/register", async (req, res) => {
-//   const { name, email, password } = req.body;
-//   const hashedPassword = await bcrypt.hash(password, 10);
-//   const user = new User({ name, email, password: hashedPassword });
-//   await user.save();
-//   res.redirect("/auth/login");
-// });
-
-// // Login
-// router.get("/login", (req, res) => {
-//   res.render("login");
-// });
-
-// router.post("/login", async (req, res) => {
-//   const { email, password } = req.body;
-//   const user = await User.findOne({ email });
-//   if (user && (await bcrypt.compare(password, user.password))) {
-//     req.session.userId = user._id;
-//     res.redirect("/transactions");
-//   } else {
-//     res.send("Invalid credentials");
-//   }
-// });
-
-// // Logout
-// router.get("/logout", (req, res) => {
-//   req.session.destroy();
-//   res.redirect("/auth/login");
-// });
-
-// module.exports = router;

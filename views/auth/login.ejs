@@ -1,0 +1,29 @@
+<%- include('../partials/auth-start') %>
+<h1>Welcome back</h1>
+<p class="lead">Log in to see how your money is doing.</p>
+
+<form action="/auth/login" method="POST" novalidate>
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <div class="field">
+    <label for="email">Email</label>
+    <div class="input-icon">
+      <i data-lucide="mail"></i>
+      <input class="input" id="email" name="email" type="email" autocomplete="email" required autofocus value="<%= old.email || '' %>" placeholder="you@example.com">
+    </div>
+  </div>
+  <div class="field">
+    <div class="row-between">
+      <label for="password" class="label">Password</label>
+      <a href="/auth/forgot" class="small">Forgot password?</a>
+    </div>
+    <div class="input-icon">
+      <i data-lucide="lock"></i>
+      <input class="input" id="password" name="password" type="password" autocomplete="current-password" required placeholder="Your password">
+      <button type="button" class="icon-btn reveal" data-reveal aria-label="Show password"><i data-lucide="eye"></i></button>
+    </div>
+  </div>
+  <button class="btn btn-primary btn-lg btn-block">Log in</button>
+</form>
+
+<p class="auth-foot">New to FinTrac? <a href="/auth/register">Create a free account</a></p>
+<%- include('../partials/auth-end') %>

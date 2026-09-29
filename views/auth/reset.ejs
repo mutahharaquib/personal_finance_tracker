@@ -1,0 +1,25 @@
+<%- include('../partials/auth-start') %>
+<h1>Choose a new password</h1>
+<p class="lead">Use at least 8 characters with letters and numbers.</p>
+
+<form action="/auth/reset/<%= token %>" method="POST">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <div class="field">
+    <label for="password">New password</label>
+    <div class="input-icon">
+      <i data-lucide="lock"></i>
+      <input class="input" id="password" name="password" type="password" autocomplete="new-password" minlength="8" maxlength="72" required autofocus>
+      <button type="button" class="icon-btn reveal" data-reveal aria-label="Show password"><i data-lucide="eye"></i></button>
+    </div>
+    <div class="pw-meter" data-pw-meter="password" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+  </div>
+  <div class="field">
+    <label for="confirmPassword">Confirm new password</label>
+    <div class="input-icon">
+      <i data-lucide="lock"></i>
+      <input class="input" id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password" minlength="8" maxlength="72" required>
+    </div>
+  </div>
+  <button class="btn btn-primary btn-lg btn-block">Update password</button>
+</form>
+<%- include('../partials/auth-end') %>

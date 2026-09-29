@@ -1,0 +1,18 @@
+<%- include('../partials/auth-start') %>
+<h1>Forgot your password?</h1>
+<p class="lead">Enter your email and we'll send you a link to reset it.</p>
+
+<form action="/auth/forgot" method="POST">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <div class="field">
+    <label for="email">Email</label>
+    <div class="input-icon">
+      <i data-lucide="mail"></i>
+      <input class="input" id="email" name="email" type="email" autocomplete="email" required autofocus placeholder="you@example.com">
+    </div>
+  </div>
+  <button class="btn btn-primary btn-lg btn-block">Send reset link</button>
+</form>
+
+<p class="auth-foot"><a href="/auth/login">← Back to log in</a></p>
+<%- include('../partials/auth-end') %>

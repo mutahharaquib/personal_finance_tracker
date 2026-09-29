@@ -1,0 +1,42 @@
+<%- include('../partials/auth-start') %>
+<h1>Create your account</h1>
+<p class="lead">Free forever. Takes less than a minute.</p>
+
+<form action="/auth/register" method="POST">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <div class="field">
+    <label for="name">Name</label>
+    <div class="input-icon">
+      <i data-lucide="user"></i>
+      <input class="input" id="name" name="name" autocomplete="name" maxlength="60" required autofocus value="<%= old.name || '' %>" placeholder="Your name">
+    </div>
+  </div>
+  <div class="field">
+    <label for="email">Email</label>
+    <div class="input-icon">
+      <i data-lucide="mail"></i>
+      <input class="input" id="email" name="email" type="email" autocomplete="email" required value="<%= old.email || '' %>" placeholder="you@example.com">
+    </div>
+  </div>
+  <div class="field">
+    <label for="password">Password</label>
+    <div class="input-icon">
+      <i data-lucide="lock"></i>
+      <input class="input" id="password" name="password" type="password" autocomplete="new-password" minlength="8" maxlength="72" required placeholder="At least 8 characters">
+      <button type="button" class="icon-btn reveal" data-reveal aria-label="Show password"><i data-lucide="eye"></i></button>
+    </div>
+    <div class="pw-meter" data-pw-meter="password" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+    <span class="hint">Use letters and numbers. Longer is stronger.</span>
+  </div>
+  <div class="field">
+    <label for="confirmPassword">Confirm password</label>
+    <div class="input-icon">
+      <i data-lucide="lock"></i>
+      <input class="input" id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password" minlength="8" maxlength="72" required placeholder="Type it again">
+    </div>
+  </div>
+  <button class="btn btn-primary btn-lg btn-block">Create account</button>
+</form>
+
+<p class="auth-foot">Already have an account? <a href="/auth/login">Log in</a></p>
+<%- include('../partials/auth-end') %>
