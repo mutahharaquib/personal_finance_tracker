@@ -1,0 +1,135 @@
+<%- include('partials/app-start') %>
+
+<div class="page-header">
+  <div>
+    <h1>Recurring</h1>
+    <p>Salary, rent, subscriptions — added to your transactions automatically on each due date.</p>
+  </div>
+  <div class="page-actions">
+    <button type="button" class="btn btn-primary" data-open="recurring-dialog"><i data-lucide="plus"></i>New recurring</button>
+  </div>
+</div>
+
+<div class="grid grid-3">
+  <div class="card kpi">
+    <div class="kpi-top"><span class="kpi-label">Recurring income</span><span class="kpi-icon tone-income"><i data-lucide="arrow-down-left"></i></span></div>
+    <div class="kpi-value text-income"><%= fmt(monthlyIncome) %></div>
+    <div class="kpi-sub">per month (approx.)</div>
+  </div>
+  <div class="card kpi">
+    <div class="kpi-top"><span class="kpi-label">Recurring expenses</span><span class="kpi-icon tone-expense"><i data-lucide="arrow-up-right"></i></span></div>
+    <div class="kpi-value text-expense"><%= fmt(monthlyExpense) %></div>
+    <div class="kpi-sub">per month (approx.)</div>
+  </div>
+  <div class="card kpi">
+    <div class="kpi-top"><span class="kpi-label">Left after fixed costs</span><span class="kpi-icon tone-primary"><i data-lucide="scale"></i></span></div>
+    <div class="kpi-value"><%= fmt(monthlyIncome - monthlyExpense) %></div>
+    <div class="kpi-sub">per month (approx.)</div>
+  </div>
+</div>
+
+<section class="card card-flush mt-2">
+  <% if (rules.length) { %>
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr><th>Description</th><th>Repeats</th><th>Next</th><th class="right">Amount</th><th class="right"><span class="sr-only">Actions</span></th></tr>
+        </thead>
+        <tbody>
+          <% rules.forEach(function (r) { %>
+            <tr style="<%= r.active ? '' : 'opacity:.55' %>">
+              <td>
+                <div class="row" style="gap:10px;min-width:180px">
+                  <span class="cat-icon sm" style="--c:<%= r.meta.color %>"><i data-lucide="<%= r.meta.icon %>"></i></span>
+                  <div style="min-width:0">
+                    <div style="font-weight:600" class="truncate"><%= r.note || r.category %></div>
+                    <div class="small muted"><%= r.category %><% if (r.endDate) { %> · until <%= formatDate(r.endDate) %><% } %></div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="badge"><%= r.frequency.charAt(0).toUpperCase() + r.frequency.slice(1) %></span></td>
+              <td class="nowrap"><%= r.active ? formatDate(r.nextDate) : 'Paused' %></td>
+              <td class="right tx-amount <%= r.type === 'income' ? 'text-income' : '' %>"><%= r.type === 'income' ? '+' : '−' %><%= fmt(r.amount) %></td>
+              <td class="right">
+                <div class="row" style="gap:2px;justify-content:flex-end">
+                  <form action="/recurring/<%= r._id %>/toggle" method="POST">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <button class="icon-btn" aria-label="<%= r.active ? 'Pause' : 'Resume' %>" title="<%= r.active ? 'Pause' : 'Resume' %>"><i data-lucide="<%= r.active ? 'pause' : 'play' %>"></i></button>
+                  </form>
+                  <form action="/recurring/<%= r._id %>/delete" method="POST" data-confirm="Delete this recurring rule? Transactions it already added are kept.">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <button class="icon-btn danger" aria-label="Delete" title="Delete"><i data-lucide="trash"></i></button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } else { %>
+    <div class="empty">
+      <span class="kpi-icon tone-primary"><i data-lucide="calendar-clock"></i></span>
+      <h3>Nothing recurring yet</h3>
+      <p>Add your salary, rent or Netflix once and FinTrac records it for you every time it's due.</p>
+      <button type="button" class="btn btn-primary" data-open="recurring-dialog"><i data-lucide="plus"></i>Add recurring transaction</button>
+    </div>
+  <% } %>
+</section>
+
+<dialog class="modal" id="recurring-dialog" aria-labelledby="rec-title" <%= old.frequency !== undefined ? 'data-autoopen' : '' %>>
+  <div class="modal-header">
+    <h2 id="rec-title">New recurring transaction</h2>
+    <button type="button" class="icon-btn" data-close aria-label="Close"><i data-lucide="x"></i></button>
+  </div>
+  <div class="modal-body">
+    <form action="/recurring" method="POST" data-tx-form>
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div class="stack" style="gap:14px">
+        <div class="segmented" role="radiogroup" aria-label="Type">
+          <input type="radio" name="type" id="r-expense" value="expense" <%= old.type !== 'income' ? 'checked' : '' %>>
+          <label for="r-expense" class="seg-expense"><i data-lucide="arrow-up-right"></i>Expense</label>
+          <input type="radio" name="type" id="r-income" value="income" <%= old.type === 'income' ? 'checked' : '' %>>
+          <label for="r-income" class="seg-income"><i data-lucide="arrow-down-left"></i>Income</label>
+        </div>
+        <div class="form-grid">
+          <div class="field">
+            <label for="r-amount">Amount</label>
+            <input class="input num" id="r-amount" name="amount" type="number" min="0.01" step="0.01" required value="<%= old.amount || '' %>">
+          </div>
+          <div class="field">
+            <label for="r-category">Category</label>
+            <select class="select" id="r-category" name="category" data-category-select data-selected="<%= old.category || '' %>" required></select>
+          </div>
+          <div class="field span-2">
+            <label for="r-note">Description</label>
+            <input class="input" id="r-note" name="note" maxlength="200" placeholder="e.g. Netflix, Rent, Salary" value="<%= old.note || '' %>">
+          </div>
+          <div class="field">
+            <label for="r-frequency">Repeats</label>
+            <select class="select" id="r-frequency" name="frequency">
+              <% frequencies.forEach(function (f) { %>
+                <option value="<%= f %>" <%= (old.frequency || 'monthly') === f ? 'selected' : '' %>><%= f.charAt(0).toUpperCase() + f.slice(1) %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="field">
+            <label for="r-date">First date</label>
+            <input class="input" id="r-date" name="date" type="date" data-today required value="<%= old.date || '' %>">
+          </div>
+          <div class="field span-2">
+            <label for="r-end">End date <span class="muted">(optional)</span></label>
+            <input class="input" id="r-end" name="endDate" type="date" value="<%= old.endDate || '' %>">
+            <span class="hint">If the first date is in the past, the missed occurrences are added right away.</span>
+          </div>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-ghost" data-close>Cancel</button>
+        <button class="btn btn-primary"><i data-lucide="check"></i>Create</button>
+      </div>
+    </form>
+  </div>
+</dialog>
+
+<%- include('partials/app-end') %>
