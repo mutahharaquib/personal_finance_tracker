@@ -1,0 +1,137 @@
+<%- include('partials/app-start') %>
+
+<div class="page-header">
+  <div>
+    <h1>Settings</h1>
+    <p>Manage your profile, categories and account.</p>
+  </div>
+</div>
+
+<div class="card" style="padding:24px">
+  <section class="settings-section" id="profile">
+    <div><h2>Profile</h2><p>Your name, email and the currency amounts are shown in.</p></div>
+    <form action="/settings/profile" method="POST">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div class="form-grid">
+        <div class="field">
+          <label for="s-name">Name</label>
+          <input class="input" id="s-name" name="name" maxlength="60" required value="<%= currentUser.name %>">
+        </div>
+        <div class="field">
+          <label for="s-email">Email</label>
+          <input class="input" id="s-email" name="email" type="email" required value="<%= currentUser.email %>">
+        </div>
+        <div class="field span-2">
+          <label for="s-currency">Currency</label>
+          <select class="select" id="s-currency" name="currency">
+            <% currencies.forEach(function (c) { %>
+              <option value="<%= c.code %>" <%= currentUser.currency === c.code ? 'selected' : '' %>><%= c.code %> — <%= c.label %></option>
+            <% }) %>
+          </select>
+          <span class="hint">Only changes how amounts are displayed; no conversion is applied.</span>
+        </div>
+      </div>
+      <div class="form-actions"><button class="btn btn-primary">Save profile</button></div>
+    </form>
+  </section>
+
+  <section class="settings-section" id="categories">
+    <div><h2>Categories</h2><p>Add your own categories. Removing one keeps its existing transactions.</p></div>
+    <div class="stack">
+      <% ['expense', 'income'].forEach(function (type) { %>
+        <div>
+          <div class="label" style="margin-bottom:8px"><%= type === 'expense' ? 'Expense categories' : 'Income categories' %></div>
+          <div class="cat-grid">
+            <% categories.filter(function (c) { return c.type === type; }).forEach(function (c) { %>
+              <div class="cat-chip">
+                <span class="cat-icon sm" style="--c:<%= c.color %>"><i data-lucide="<%= c.icon %>"></i></span>
+                <span class="truncate"><%= c.name %></span>
+                <span class="small muted num" title="Transactions"><%= usageCount(c) %></span>
+                <form action="/settings/categories/<%= c._id %>/delete" method="POST" data-confirm="Remove the category “<%= c.name %>”?">
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                  <button class="icon-btn danger" aria-label="Remove <%= c.name %>" style="width:28px;height:28px"><i data-lucide="x"></i></button>
+                </form>
+              </div>
+            <% }) %>
+          </div>
+        </div>
+      <% }) %>
+
+      <form action="/settings/categories" method="POST" class="card" style="background:var(--surface-2);box-shadow:none">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <h3 style="margin-bottom:14px">Add a category</h3>
+        <div class="form-grid">
+          <div class="field">
+            <label for="c-name">Name</label>
+            <input class="input" id="c-name" name="name" maxlength="40" required placeholder="e.g. Coffee">
+          </div>
+          <div class="field">
+            <label for="c-type">Type</label>
+            <div class="row" style="gap:8px">
+              <select class="select" id="c-type" name="type">
+                <option value="expense">Expense</option>
+                <option value="income">Income</option>
+              </select>
+              <label for="c-color" class="sr-only">Colour</label>
+              <input class="input" type="color" id="c-color" name="color" value="#6366f1" title="Colour">
+            </div>
+          </div>
+          <div class="field span-2">
+            <span class="label">Icon</span>
+            <div class="picker">
+              <% icons.forEach(function (icon, i) { %>
+                <input type="radio" name="icon" id="ci-<%= i %>" value="<%= icon %>" <%= i === 0 ? 'checked' : '' %>>
+                <label for="ci-<%= i %>" title="<%= icon %>"><i data-lucide="<%= icon %>"></i><span class="sr-only"><%= icon %></span></label>
+              <% }) %>
+            </div>
+          </div>
+        </div>
+        <div class="form-actions"><button class="btn btn-primary"><i data-lucide="plus"></i>Add category</button></div>
+      </form>
+    </div>
+  </section>
+
+  <section class="settings-section" id="security">
+    <div><h2>Password</h2><p>Use at least 8 characters with letters and numbers.</p></div>
+    <form action="/settings/password" method="POST">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div class="form-grid">
+        <div class="field span-2">
+          <label for="p-current">Current password</label>
+          <input class="input" id="p-current" name="currentPassword" type="password" autocomplete="current-password" required>
+        </div>
+        <div class="field">
+          <label for="p-new">New password</label>
+          <input class="input" id="p-new" name="newPassword" type="password" autocomplete="new-password" minlength="8" maxlength="72" required>
+        </div>
+        <div class="field">
+          <label for="p-confirm">Confirm new password</label>
+          <input class="input" id="p-confirm" name="confirmPassword" type="password" autocomplete="new-password" minlength="8" maxlength="72" required>
+        </div>
+      </div>
+      <div class="form-actions"><button class="btn btn-primary">Change password</button></div>
+    </form>
+  </section>
+
+  <section class="settings-section" id="data">
+    <div><h2>Your data</h2><p>Download everything as a CSV you can open in Excel or Google Sheets.</p></div>
+    <div class="row" style="flex-wrap:wrap">
+      <a href="/transactions/export" class="btn btn-secondary"><i data-lucide="download"></i>Export all transactions</a>
+      <a href="/transactions#import" class="btn btn-secondary"><i data-lucide="upload"></i>Import from CSV</a>
+    </div>
+  </section>
+
+  <section class="settings-section" id="danger">
+    <div><h2 class="text-expense">Delete account</h2><p>Permanently deletes your account and all transactions, budgets, goals and categories.</p></div>
+    <form action="/settings/delete-account" method="POST" class="card danger-zone" data-confirm="This permanently deletes your account and all your data. Continue?">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div class="field">
+        <label for="d-password">Confirm with your password</label>
+        <input class="input" id="d-password" name="password" type="password" autocomplete="current-password" required>
+      </div>
+      <div class="form-actions"><button class="btn btn-danger"><i data-lucide="trash"></i>Delete my account</button></div>
+    </form>
+  </section>
+</div>
+
+<%- include('partials/app-end') %>
