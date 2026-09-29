@@ -1,53 +1,42 @@
 ✅ MUST-HAVES (Before Going Live)
 1. Secure Authentication
- ✅ Email/password auth implemented.
-
- ☐ Prevent duplicate email registrations with user-friendly error page.
-
+ ✅ Email/password auth implemented (bcrypt, 12 rounds).
+ ✅ Prevent duplicate email registrations with user-friendly error message.
  ☐ Add Google OAuth for smoother signups and anti-spam protection.
-
- ☐ Session security (e.g. secure cookies, session expiration).
+ ✅ Session security: MongoDB session store, httpOnly + sameSite cookies, secure in production,
+    14-day rolling expiry, session regenerated on login.
+ ✅ Forgot / reset password by email (tokens hashed, 1 hour expiry, single use).
 
 2. Authorization Middleware
- ✅ requireLogin middleware used.
-
- ☐ Apply it consistently across all sensitive routes (/dashboard, /transactions, /summary, etc).
+ ✅ requireLogin applied to every app route (dashboard, transactions, budgets, goals, recurring, reports, settings).
 
 3. User Data Isolation
- ✅ Transactions tied to userId.
-
- ☐ Ensure all queries filter by req.session.userId.
+ ✅ Every query filters by the signed-in user (tests cover cross-user edit/delete attempts).
 
 4. Form and Input Validation
- ☐ Sanitize all input fields (amount, category, note, etc.).
-
- ☐ Validate forms (e.g. amount must be a number, category not empty).
-
- ☐ Server-side validation (not just frontend).
+ ✅ Server-side validation for all forms (amounts, dates, categories, lengths, emails, passwords).
+ ✅ Output escaped by EJS; CSV export guards against spreadsheet formula injection.
 
 5. Error Handling
- ☐ Catch all server/database errors.
-
- ☐ Redirect to a custom error page with a friendly message.
-
- ☐ Log errors for debugging (e.g. with winston or simple console logs).
+ ✅ Express 5 catches async errors; custom 404 / error page; server errors logged.
 
 🚧 SHOULD-HAVES (Before First Real Users)
 6. MVC Architecture
- ☐ Move route logic to controllers (authController, transactionController, etc.).
-
- ☐ Organize views, models, routes, controllers, and middlewares.
+ ✅ Controllers, routes, services, middlewares, models, utils separated.
 
 7. User Experience
- ☐ Improve feedback messages (e.g., success/fail after form submission).
-
- ☐ Responsive and user-friendly UI.
-
- ☐ Dashboard loading and data visualizations (maybe charts later).
+ ✅ Toast feedback after every action; forms keep input after validation errors.
+ ✅ Responsive UI (sidebar on desktop, drawer + floating add button on mobile), dark mode.
+ ✅ Charts: cash flow, category doughnut, report trends.
 
 8. Security Enhancements
- ☐ Use helmet middleware for HTTP headers.
+ ✅ helmet (strict CSP with nonces)
+ ✅ express-rate-limit on login/register/password reset
+ ✅ CSRF protection on all forms
 
- ☐ Use express-rate-limit to prevent abuse.
-
- ☐ Add CSRF protection.
+💡 IDEAS FOR LATER
+ ☐ Google OAuth
+ ☐ Multiple accounts/wallets (cash, bank, card) with transfers
+ ☐ Receipt photo attachments
+ ☐ Email/push reminders for upcoming bills and budget alerts
+ ☐ Installable PWA with offline entry
